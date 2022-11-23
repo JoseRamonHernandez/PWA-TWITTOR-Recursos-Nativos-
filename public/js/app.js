@@ -76,7 +76,9 @@ var foto = null;
 var usuario;
 
 
-
+// Init de la camara class
+// document.getElementById('player');
+const camara = new Camara($('#player')[0]);
 // ===== Codigo de la aplicación
 
 function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
@@ -85,6 +87,8 @@ function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
 
     var content = `
     <li class="animated fadeIn fast"
+        data-user="${ personaje }"
+        data-mensaje="${ mensaje }"
         data-tipo="mensaje">
         <div class="avatar">
             <img src="img/avatars/${ personaje }.jpg">
@@ -95,7 +99,6 @@ function crearMensajeHTML(mensaje, personaje, lat, lng, foto) {
                 <br/>
                 ${ mensaje }
                 `;
-
     if (foto) {
         content += `
                 <br>
@@ -506,6 +509,9 @@ btnLocation.on('click', () => {
 btnPhoto.on('click', () => {
 
     console.log('Inicializar camara');
+    contenedorCamara.removeClass('oculto');
+
+    camara.encender();
 
 });
 
@@ -515,7 +521,48 @@ btnTomarFoto.on('click', () => {
 
     console.log('Botón tomar foto');
 
+    foto = camara.tomarFoto();
+
+    camara.apagar();
+
+    // console.log(foto);
+
 });
 
 
 // Share API
+
+// if ( navigator.share ) {
+//     console.log('Navegador lo soporta');
+// } else {
+//     console.log('Navegador NO lo soporta');
+// }
+
+timeline.on('click', 'li', function() {
+
+    // console.log(  $(this)  );
+
+    let tipo = $(this).data('tipo');
+    let lat = $(this).data('lat');
+    let lng = $(this).data('lng');
+    let mensaje = $(this).data('mensaje');
+    let user = $(this).data('user');
+
+    console.log({ tipo, lat, lng, mensaje, user });
+
+
+    const shareOpts = {
+        title: user,
+        text: mensaje
+    };
+
+    if (tipo === 'mapa') {
+        shareOpts.text = 'Mapa';
+        shareOpts.url = `https://www.google.com/maps/@${ lat },${ lng },15z`;
+    }
+
+    navigator.share(shareOpts)
+        .then(() => console.log('Successful share'))
+        .catch((error) => console.log('Error sharing', error));
+
+});
