@@ -263,7 +263,7 @@ postBtn.on('click', function() {
     camera.apagar();
     contenedorCamara.addClass('oculto');
 
-    crearMensajeHTML(mensaje, usuario, lat, lng, foto);
+    crearMensajeHTML(mensaje, usuario, lat, lng, foto);  
 
     foto = null;
 });
